@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 function Signin(){
     const navigate = useNavigate();
     const [Email, setEmail] = useState('');
@@ -15,6 +16,11 @@ function Signin(){
                 e.preventDefault();
                 console.log('TEST')
                 // axios 모듈을 활용한 DB 조회
+                axios.get('http://192.168.30.19:5000').then(res=>
+                    console.log(res)
+                ).catch(error=>{
+                    console.log(error)
+                })
                 // redux를 활용하여 user 세팅
             }}>
                 <label htmlFor='email'>Email</label>
