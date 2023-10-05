@@ -56,13 +56,11 @@ def get_menulist():
 
     result = []
     from pprint import pprint as print
-    # return jsonify({'data':categories, 'status':HTTPStatus.OK})
-    # print(menu_tree)
     return jsonify(menu_tree)
 
 def build_menu_tree(menu_data):
     menu_dict = {}
-
+    top_level_menus = []
     for row in menu_data:
         menu_id, parent_menu_id, menu_name, menu_type, menu_level, menu_order = row
         menu_item = {
@@ -83,12 +81,13 @@ def build_menu_tree(menu_data):
         
         if menu_level == 1:
             menu_dict[menu_id] = { **menu_item, **menu_dict[menu_id]}
+            top_level_menus.append(menu_dict[menu_id])
 
         else:
             parent_menu = menu_dict[parent_menu_id]
             parent_menu['children'].append(menu_item)
 
-    return menu_dict
+    return top_level_menus
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

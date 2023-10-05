@@ -8,7 +8,7 @@ networks:
 
 services:
   flask-api:
-    container_name: flask_api
+    container_name: flask-api
     env_file: ./backend/.env
     build:
       target: backend
@@ -16,7 +16,7 @@ services:
       - ./backend:/app
     networks:
       - web_network
-    ports:
+    ports: 
       - 5000:5000
     stdin_open: true
     tty: true
@@ -33,7 +33,7 @@ services:
     networks:
       - web_network
     depends_on: 
-      - flask_api
+      - flask-api
 
 
   react-ui:
