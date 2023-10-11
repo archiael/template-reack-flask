@@ -50,8 +50,8 @@ function MenuContent({selectedMenu}){
             { field: 'name', headerName: 'Name', width: 150, editable:true },
             { field: 'description', headerName: 'Description', width: 300, editable: true },
             { field: 'actions', type:'actions', headerName:'Actions',width:100,cellClassName:'actions', getActions: ({id})=>{
-                console.log('Inner GetActions',id)
                 const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+                console.log(isInEditMode)
                 if (isInEditMode){
                     return [
                         <GridActionsCellItem
@@ -60,13 +60,13 @@ function MenuContent({selectedMenu}){
                             sx={{
                                 color: "primary.main"
                             }}
-                            onClick={null}
+                            onClick={handleSaveClick(id)}
                         />,
                         <GridActionsCellItem
                             icon={<CancelIcon/>}
                             label="Cancel"
                             className="textPrimary"
-                            onClick={null}
+                            onClick={handleCancelClick(id)}
                             color="inherit"
                         />
                     ]
@@ -82,7 +82,7 @@ function MenuContent({selectedMenu}){
                         <GridActionsCellItem
                             icon={<DeleteIcon />}
                             label="Delete"
-                            // onClick={handleDeleteClick(id)}
+                            onClick={handleDeleteClick(id)}
                             color="inherit"
                         />,
                     ]
@@ -116,6 +116,26 @@ function MenuContent({selectedMenu}){
     const handleEditClick = (id) => () => {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     };
+
+    const handleSaveClick = (id) => () => {
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    };
+
+    const handleDeleteClick = (id) => () => {
+        setRows(rows.filter((row) => row.id !== id));
+    };
+
+    const handleCancelClick = (id) => () => {
+        setRowModesModel({
+            ...rowModesModel,
+            [id]: { mode: GridRowModes.View, ignoreModifications: true },
+        });
+        const editedRow = rows.find((row) => row.id === id);
+        if (editedRow.isNew) {
+            setRows(rows.filter((row) => row.id !== id));
+        }
+    };
+
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
@@ -138,7 +158,7 @@ function MenuContent({selectedMenu}){
 
     return(
         <>
-            <div style={{height:400, width: '80%'}}>
+            <div style={{height:400, width: '80vw'}}>
                 {/* {selectedMenu} */}
                 {/* <button onClick={addRow}>Add Row</button> */}
                 {/* <CustomToolbar/> */}
@@ -151,12 +171,15 @@ function MenuContent({selectedMenu}){
                     onRowClick={handleRowClick}
                     processRowUpdate={processRowUpdate}
                     editMode='row'
-                    slots={{
-                        toolbar: CustomToolbar
-                    }}
                     pageSize={5}
                     rowPerPageOptions={[5,10,20]}
                     onEditCellChangeCommitted={handleCellEditCommit}
+                    slots={{
+                        toolbar: CustomToolbar
+                    }}
+                    slotProps={{
+                        toolbar: { setRows, setRowModesModel}
+                    }}
                 />
             </div>
             <div>

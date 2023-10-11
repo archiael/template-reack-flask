@@ -5,58 +5,92 @@ import axios from 'axios'
 import {
     Box,
     Button,
-    Checkbox,
     FormControl,
-    FormControlLabel,
-    FormHelperText,
-    IconButton,
-    InputAdornment,
-    InputLabel,
-    Input,
-    OutlinedInput,
-    Stack,
     Typography,
-    Grid,
     Container,
     Card,
     CardContent,
+    TextField,
+    Alert,
+    Slide
 } from '@mui/material';
+
+function Transition(props){
+    return <Slide {...props} direction="down" timeout={2000}/>;
+}
 
 function Signin(){
     const navigate = useNavigate();
-    const [Email, setEmail] = useState('');
-    const [Password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+
     const onSubmit = e => {
         e.preventDefault();
-        console.log('TEST')
+
         // axios 모듈을 활용한 DB 조회
         axios.get('http://192.168.30.19:5000').then(res =>
             console.log(res)
         ).catch(error => {
-            console.log(error)
+            console.log(error);
+            setShowAlert(true);
+            setTimeout(()=>{
+                setShowAlert(false);
+            }, 3000)
         })
         // redux를 활용하여 user 세팅
     }
+
     return(
         <>  
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                <h1 style={{ justifyContent: 'center'}}>Sign In</h1>
-            </div>
-            <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={onSubmit}>
-                <label htmlFor='email'>Email</label>
-                <input id='email' name='email' type='email' onChange={e=>{setEmail(e.currentTarget.value)}}/>
-                <label htmlFor='password'>Password</label>
-                <input id='password' name='password' type='password' onChange={e=>{setEmail(e.currentTarget.value)}}/>
-                <br/>
-                <div style={{display:'flex', alignItems:'center'}}>
-                    <button style={{width:'50%'}} type='submit'>Sign In</button>
-                    <button style={{width:'50%'}} onClick={()=>{
-                        navigate('/signup')
-                    }}>Sign Up</button>  
-                </div>
-            </form>
-            </div>
+            <Box display="flex" flexDirection="column" height="100vh" justifyContent="center" alignItems="center">
+            <Box position="absolute" top="30%" transform="translateY(-50%)">
+            <Container component="main" maxWidth="xs">
+                <Card elevation={3}>
+                    <CardContent>
+                        <Typography component="h1" variant="h5" align="center">
+                            Sign In
+                        </Typography>
+                        <form onSubmit={onSubmit}>
+                            <FormControl fullWidth margin="normal">
+                                <TextField
+                                    variant="outlined"
+                                    id='email'
+                                    label='Email'
+                                    type='email'
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                />
+                            </FormControl>
+                            <FormControl fullWidth margin="normal">
+                                <TextField
+                                    variant="outlined"
+                                    id='password'
+                                    label='Password'
+                                    type='password'
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                />
+                            </FormControl>
+                            <Box display="flex" justifyContent="space-between" marginTop="1rem">
+                                <Button variant="contained" color="primary" type='submit' style={{ width: '48%' }}>
+                                    Sign In
+                                </Button>
+                                <Button variant="outlined" color="primary" style={{ width: '48%' }} onClick={() => navigate('/signup')}>
+                                    Sign Up
+                                </Button>
+                            </Box>
+                        </form>
+                    </CardContent>
+                </Card>
+            </Container>
+                { showAlert && (
+                    <Box mt={2}>
+                            <Alert severity="error" variant="filled" TransitionComponent={Transition}>Incorrect username or password. Please try again.</Alert>
+                    </Box>
+                )}
+            </Box>
+            </Box>
         </>
     )
 }
